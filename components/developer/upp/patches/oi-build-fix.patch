@@ -1,5 +1,54 @@
+--- upp/configure	Wed Dec 18 16:28:42 2024
++++ upp-patched/configure	Mon Feb 24 13:27:22 2025
+@@ -1,5 +1,8 @@
+ #!/usr/bin/env bash
+ 
++SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++cd ${SCRIPT_DIR}
++
+ ./configure_makefile Makefile
+ ./configure_makefile umkMakefile
+ 
+--- upp/Makefile.in	Wed Dec 18 16:28:58 2024
++++ upp-patched/Makefile.in	Wed Feb 26 17:17:49 2025
+@@ -2,16 +2,20 @@
+ UPPDIR2 = /home/cxl/.config/u++/umk/UppHub/gdal/
+ UPPDIR3 = /home/cxl/.config/u++/umk/UppHub/eigen/
+ 
++OI_COMMON = -m64
++OI_INC = -I/usr/gcc/14/include/c++/14.2.0/ -I/usr/gcc/14/include/c++/14.2.0/x86_64-pc-solaris2.11 -I/usr/clang/18/include
++OI_LDFLAGS = -Wl,-rpath=/usr/lib -Wl,-rpath=/usr/clang/18/lib -L/usr/gcc/14/lib/gcc/x86_64-pc-solaris2.11/14.2.0/ -L/usr/clang/18/lib
++
+ UPPOUT = .cache/upp.out/
+-CINC   =  -I$(UPPDIR1) -I$(UPPDIR2) -I$(UPPDIR3) `pkg-config --cflags libpng` `pkg-config --cflags freetype2` `pkg-config --cflags fontconfig` `pkg-config --cflags x11` `pkg-config --cflags xcb` `pkg-config --cflags expat` `pkg-config --cflags xinerama` `pkg-config --cflags xrender` `pkg-config --cflags xft` `pkg-config --cflags xdmcp` `pkg-config --cflags xext` `pkg-config --cflags gtk+-3.0` `pkg-config --cflags libnotify` -I./ -I$(UPPOUT)
+-Macro  =  -DflagGUI -DflagGCC -DflagSHARED -DflagPOSIX -DflagLINUX
+-CXX = c++
++CINC   =  -I$(UPPDIR1) -I$(UPPDIR2) -I$(UPPDIR3) `pkg-config --cflags libpng` `pkg-config --cflags freetype2` `pkg-config --cflags fontconfig` `pkg-config --cflags x11` `pkg-config --cflags xcb` `pkg-config --cflags expat` `pkg-config --cflags xinerama` `pkg-config --cflags xrender` `pkg-config --cflags xft` `pkg-config --cflags xdmcp` `pkg-config --cflags xext` `pkg-config --cflags gtk+-3.0` `pkg-config --cflags libnotify` $(OI_INC) -I./ -I$(UPPOUT)
++Macro  =  -DflagGUI -DflagGCC -DflagSHARED -DflagPOSIX -DflagSOLARIS -DflagLCLANG -DflagUSEMALLOC
++CXX = /usr/gcc/14/bin/g++
+ LINKER = $(CXX)
+-CFLAGS = -O3 -ffunction-sections -fdata-sections 
+-CXXFLAGS = -O3 -ffunction-sections -fdata-sections  -std=c++17
+-LDFLAGS = $(LINKOPTIONS)
++CFLAGS = -O3 -ffunction-sections -fdata-sections $(OI_COMMON)
++CXXFLAGS = -O3 -ffunction-sections -fdata-sections -std=c++17 $(OI_COMMON)
++LDFLAGS = $(OI_COMMON) $(OI_LDFLAGS) $(LINKOPTIONS)
+ LIBPATH =
+-AR = ar -sr
++AR = /usr/gcc/14/bin/gcc-ar -sr
+ 
+ OutDir_ide = $(UPPOUT)ide/GCC-Gcc-Gui-Linux-Main-Posix-Shared/
+ Macro_ide = $(Macro) -DflagMAIN
+@@ -400,6 +404,7 @@
+ 			-lpthread \
+ 			-ldl \
+ 			-lrt \
++			-lclang \
+ 			-lz -Wl,--end-group
+ 
+ $(OutDir_ide):
 --- upp/Makefile	Wed Dec 18 16:28:58 2024
-+++ upp-patched/Makefile	Mon Feb 24 13:43:56 2025
++++ upp-patched/Makefile	Wed Feb 26 17:17:54 2025
 @@ -2,92 +2,96 @@
  UPPDIR2 = /home/cxl/.config/u++/umk/UppHub/gdal/
  UPPDIR3 = /home/cxl/.config/u++/umk/UppHub/eigen/
@@ -11,18 +60,20 @@
  UPPOUT = .cache/upp.out/
 -CINC   =  -I$(UPPDIR1) -I$(UPPDIR2) -I$(UPPDIR3) `pkg-config --cflags libpng` `pkg-config --cflags freetype2` `pkg-config --cflags fontconfig` `pkg-config --cflags x11` `pkg-config --cflags xcb` `pkg-config --cflags expat` `pkg-config --cflags xinerama` `pkg-config --cflags xrender` `pkg-config --cflags xft` `pkg-config --cflags xdmcp` `pkg-config --cflags xext` `pkg-config --cflags gtk+-3.0` `pkg-config --cflags libnotify` -I./ -I$(UPPOUT)
 -Macro  =  -DflagGUI -DflagGCC -DflagSHARED -DflagPOSIX -DflagLINUX
+-CXX = c++
 +CINC   =  -I$(UPPDIR1) -I$(UPPDIR2) -I$(UPPDIR3) `pkg-config --cflags libpng` `pkg-config --cflags freetype2` `pkg-config --cflags fontconfig` `pkg-config --cflags x11` `pkg-config --cflags xcb` `pkg-config --cflags expat` `pkg-config --cflags xinerama` `pkg-config --cflags xrender` `pkg-config --cflags xft` `pkg-config --cflags xdmcp` `pkg-config --cflags xext` `pkg-config --cflags gtk+-3.0` `pkg-config --cflags libnotify` $(OI_INC) -I./ -I$(UPPOUT)
-+Macro  =  -DflagGUI -DflagGCC -DflagSHARED -DflagPOSIX -DflagSOLARIS
- CXX = c++
++Macro  =  -DflagGUI -DflagGCC -DflagSHARED -DflagPOSIX -DflagSOLARIS -DflagLCLANG -DflagUSEMALLOC
++CXX = /usr/gcc/14/bin/g++
  LINKER = $(CXX)
 -CFLAGS = -O3 -ffunction-sections -fdata-sections 
 -CXXFLAGS = -O3 -ffunction-sections -fdata-sections  -std=c++17
 -LDFLAGS = -Wl,--gc-sections $(LINKOPTIONS)
 +CFLAGS = -O3 -ffunction-sections -fdata-sections $(OI_COMMON)
 +CXXFLAGS = -O3 -ffunction-sections -fdata-sections -std=c++17 $(OI_COMMON)
-+LDFLAGS = $(LINKOPTIONS) $(OI_COMMON) $(OI_LDFLAGS)
++LDFLAGS = $(OI_COMMON) $(OI_LDFLAGS) $(LINKOPTIONS)
  LIBPATH =
- AR = ar -sr
+-AR = ar -sr
++AR = /usr/gcc/14/bin/gcc-ar -sr
  
 -OutDir_ide = $(UPPOUT)ide/GCC-Gcc-Gui-Linux-Main-Posix-Shared/
 +OutDir_ide = $(UPPOUT)ide/GCC-Gcc-Gui-Main-Posix-Shared-Solaris/
@@ -149,7 +200,7 @@
  		$(OutDir_ide)BaseDlg.o \
  		$(OutDir_ide)SelectPkg.o \
  		$(OutDir_ide)UppWspc.o \
-@@ -397,9 +401,9 @@
+@@ -397,9 +401,10 @@
  			-lbz2 \
  			-lcrypto \
  			-lssl \
@@ -158,6 +209,7 @@
  			-ldl \
 -			-lrt \
 +			-lsocket -lnsl \
++			-lclang \
  			-lz -Wl,--end-group
  
  $(OutDir_ide):
