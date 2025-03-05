@@ -29,5 +29,18 @@ COMPONENT_ARCHIVE_URL=	https://github.com/ultimatepp/ultimatepp/releases/downloa
 COMPONENT_CLASSIFICATION=	Development/UPP
 COMPONENT_LICENSE=      BSD
 
+TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
+
+REQUIRED_PACKAGES += $(GCC_RUNTIME_PKG)
+REQUIRED_PACKAGES += $(GXX_RUNTIME_PKG)
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += developer/clang-18
+REQUIRED_PACKAGES += developer/git
+REQUIRED_PACKAGES += library/gtk3-nocsd
+REQUIRED_PACKAGES += library/libnotify
+REQUIRED_PACKAGES += library/openssl
+REQUIRED_PACKAGES += library/freetype
+REQUIRED_PACKAGES += archiver/bzip2
+
 
